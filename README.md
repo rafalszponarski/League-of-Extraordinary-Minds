@@ -1,2 +1,4 @@
-# League-of-Extraordinary-Minds
-Odpowiedzi do zadań z platformy League of Extraordinary Minds (LEM)
+# League of Extraordinary Minds (LEM)
+Repozytorium zawiera moje odpowiedzi do zadań z języka Python
+
+Do stworzenia przedstawionej struktury folder-plik użyłem autorskiego programu extractor.py
