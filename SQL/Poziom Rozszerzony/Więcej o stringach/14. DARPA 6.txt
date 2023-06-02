@@ -1,0 +1,1 @@
+SELECT ID, SN FROM tests WHERE SN NOT GLOB '[0-9][0-9][A-Z][a-z][0-9][0-9][0-9][0-9][A-Z][A-Z][a-z][0-9][0-9][abcABC]';

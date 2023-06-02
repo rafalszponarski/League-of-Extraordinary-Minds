@@ -1,0 +1,1 @@
+EXPLAIN QUERY PLAN SELECT name, title FROM Artists JOIN Artworks ON name = artist WHERE artist IN ('Pocock, Nicholas', 'Varley, John', 'Hussey, Giles');

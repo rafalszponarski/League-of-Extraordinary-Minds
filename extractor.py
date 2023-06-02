@@ -1,12 +1,13 @@
 from requests import post
 from json import loads
 from os import mkdir
+from os.path import exists
 
 
-PATH = "C:/Users/rafal/Desktop/LNU"
+SAVE_DIR = "C:/Users/YOUR_USERNAME/Desktop/LNU"  # Folder do którego będą zapisywane pliki
 URL = "https://edu.t-lem.com/"
-MAIL = ""  # Zmień to
-PASSWORD = ""  # Zmień to
+MAIL = ""  # Twój email
+PASSWORD = ""  # Twoje hasło
 COOKIE = post(URL, data={"act[module]": "auth", "act[cmd]": "login", "act[params][login]": MAIL, "act[params][pass]": PASSWORD}).cookies.get("LNU_SESSION")
 HEADERS = {
     "Host": "edu.t-lem.com",
@@ -29,36 +30,54 @@ HEADERS = {
     "Connection": "close"
 }
 
-main = post(URL, headers=HEADERS, data="act%5Bid%5D=menus&act%5Bmodule%5D=menus&act%5Bparams%5D%5B%5D=get").content
+main = post(URL, headers=HEADERS, data="act[id]=menus&act[module]=menus&act[params][]=get").content
 
-for language in {"Python": 2}.values():
+for language in {"Python": 2, "SQL": 3}.values():
     MODULE = loads(main)['data']['menus'][1]['submenus'][language]
     module_title = MODULE['title'].split()[-1]  # np. Język Python
-    mkdir(f"{PATH}/{module_title}")
+    path = f"{SAVE_DIR}/{module_title}"
+    mkdir(path) if not exists(path) else None
 
     for exp in {"Podstawa": 0, "Rozszerzenie": 1}.values():
         LEVEL = MODULE['submenus'][exp]
         level_title = LEVEL['title']  # np. Poziom Podstawowy
-        mkdir(f"{PATH}/{module_title}/{level_title}")
+        path = f"{SAVE_DIR}/{module_title}/{level_title}"
+        mkdir(path) if not exists(path) else None
 
         for topic_num in range(len(LEVEL['submenus'])):
             TOPIC = LEVEL['submenus'][topic_num]
             topic_title = TOPIC['title']  # np. Zmienne i stringi
-            mkdir(f"{PATH}/{module_title}/{level_title}/{topic_title}")
+            path = f"{SAVE_DIR}/{module_title}/{level_title}/{topic_title}"
+            mkdir(path) if not exists(path) else None
 
             for task_num in range(len(TOPIC['submenus'])):
                 TASK = TOPIC['submenus'][task_num]
                 task_title = TASK['title'].replace(":", "").replace("?", "").replace("..", "").replace("/", " ").strip()
                 print(f"{module_title} --> {level_title} --> {topic_title} --> {task_title}")
 
-                page = post(URL, headers=HEADERS, data=f"act%5Bid%5D=lekcja&act%5Bmodule%5D=lekcja&act%5Bparams%5D%5B%5D=get&act%5Bparams%5D%5B%5D={TASK['id']}").content
+                if language == 2:  # Python
 
-                if "quiz" not in loads(page)['data']['lekcja']['s_tytul'].lower():
+                    page = post(URL, headers=HEADERS, data=f"act[id]=lekcja&act[module]=lekcja&act[params][]=get&act[params][]={TASK['id']}").content
 
-                    files = loads(page)['data']['lekcja']['t_code']['files']
-                    for file in files:
-                        if not file['readOnly']:
-                            with open(f"{PATH}/{module_title}/{level_title}/{topic_title}/{task_title}.py", 'w') as save:
-                                save.write(file['code'])
+                    if "quiz" not in loads(page)['data']['lekcja']['s_tytul'].lower():
+
+                        files = loads(page)['data']['lekcja']['t_code']['files']
+                        for file in files:
+                            if not file['readOnly']:
+                                with open(f"{SAVE_DIR}/{module_title}/{level_title}/{topic_title}/{task_title}.py", 'w') as save:
+                                    save.write(file['code'])
+
+                elif language == 3:  # SQL
+
+                    page = post(URL, headers=HEADERS, data=f"act[id]=sql&act[module]=sql&act[params][]=get&act[params][]={TASK['id']}").content
+                    history = loads(page)['data']['history']
+
+                    if history:
+                        last_answer = str(history).strip().split('\n')[-1]
+                        correct_answer = last_answer  # Zakładam, że ostatnia komenda reprezentuje poprawną odpowiedź. Wysyłanie do serwera X zapytań na każdy element ze zmiennej 'historia' nie jest dobrym pomysłem
+
+                        with open(f"{SAVE_DIR}/{module_title}/{level_title}/{topic_title}/{task_title}.txt", 'w') as save:
+                            save.write(correct_answer)
+
 
 print("\nFinished!")

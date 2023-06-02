@@ -1,0 +1,1 @@
+SELECT famous_cats.name AS name, cartoons.country AS country FROM famous_cats, cartoons WHERE famous_cats.origin  = cartoons.title;

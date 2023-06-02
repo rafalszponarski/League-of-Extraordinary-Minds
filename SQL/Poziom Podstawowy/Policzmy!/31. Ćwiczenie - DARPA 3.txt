@@ -1,0 +1,1 @@
+SELECT [group], COUNT(id) as [total samples] FROM samples WHERE (test_1 + test_2 + test_3) > 10 GROUP BY [group] HAVING count(id) > 1 ORDER BY [total samples] DESC;

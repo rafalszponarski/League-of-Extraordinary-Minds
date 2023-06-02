@@ -1,0 +1,1 @@
+DELETE FROM samples WHERE id IN (SELECT id FROM samples WHERE ROUND(test_1+test_2+test_3, 0) IN (SELECT ROUND(test_1+test_2+test_3, 0) AS suma FROM samples GROUP BY suma HAVING COUNT(suma)>2));

@@ -1,0 +1,1 @@
+SELECT authors.last_name, authors.first_name, COUNT(DISTINCT books.publisher_id) AS publishers FROM authors INNER JOIN books ON authors.id = books.author_id GROUP BY authors.id ORDER BY publishers DESC, authors.last_name, authors.first_name;

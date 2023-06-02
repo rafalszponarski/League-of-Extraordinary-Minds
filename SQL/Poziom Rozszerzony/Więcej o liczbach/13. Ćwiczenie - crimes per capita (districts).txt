@@ -1,0 +1,1 @@
+SELECT district, ROUND(((SUM(y_12)+SUM(y_13)+SUM(y_14)+SUM(y_15)+SUM(y_16)) / CAST(SUM(population) AS FLOAT)), 2) AS [crimes per capita] FROM crimes GROUP BY district ORDER BY [crimes per capita] DESC;
